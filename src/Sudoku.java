@@ -4,11 +4,11 @@ import java.util.stream.Collectors;
 public class Sudoku {
 
     private int[][] sudoku;
-    private List<int[][]> solucions;
+    private List<int[][]> solutions;
 
     public Sudoku(int[][] sudoku) {
         this.sudoku = sudoku;
-        this.solucions = new ArrayList<>();
+        this.solutions = new ArrayList<>();
     }
 
     /**
@@ -17,20 +17,32 @@ public class Sudoku {
      */
     public int greedySolver(){
 
+        Map<Integer, List<Integer>> blanksInEachBlock = new HashMap<>();
+        blanksInEachBlock.put(0, new ArrayList<>());
+        blanksInEachBlock.put(1, new ArrayList<>());
+        blanksInEachBlock.put(2, new ArrayList<>());
+        blanksInEachBlock.put(10, new ArrayList<>());
+        blanksInEachBlock.put(11, new ArrayList<>());
+        blanksInEachBlock.put(12, new ArrayList<>());
+        blanksInEachBlock.put(20, new ArrayList<>());
+        blanksInEachBlock.put(21, new ArrayList<>());
+        blanksInEachBlock.put(22, new ArrayList<>());
+
         int[][] solution = sudokuCopy();
-        int iniZeros = countZeros(solution);
+        int iniZeros = countZeros(solution, blanksInEachBlock);
         int currZeros = iniZeros;
 
         do {
-            fillSudoku(solution);
+            fillSudoku(solution, blanksInEachBlock);
             iniZeros = currZeros;
-            currZeros = countZeros(solution);
+            currZeros = countZeros(solution, blanksInEachBlock);
 
         }while (currZeros < iniZeros);
 
-        solucions.add(solution);
-        if (currZeros == 0) return 0;
-        else return 1;
+        solutions.add(solution);
+
+        if (currZeros > 0) return 1;
+        else return 0;
     }
 
     /**
@@ -38,61 +50,179 @@ public class Sudoku {
      * @param board - sudoku
      * @return number of empty cells
      */
-    private int countZeros(int[][] board){
+    private int countZeros(int[][] board, Map<Integer, List<Integer>> blanksInEachBlock){
         int numZeros = 0;
+        int blockIndex = 0;
 
         for (int i = 0; i < 9; i++){
             for (int j = 0; j < 9; j++){
-                if (board[i][j] == 0) numZeros++;
+                if (board[i][j] == 0){
+                    numZeros++;
+                    blockIndex = getBlockIndex(i, j);
+                    blanksInEachBlock.get(blockIndex).add(getCellIndex(i, j));
+                }
             }
         }
         return numZeros;
     }
 
     /**
+     * Calculates the index of the bloc given a cell in that block
+     * @param row row index of the cell
+     * @param column column index of the cell
+     * @return the index of the block containing the cell
+     *          Possible indexs: 00,01,02,10,11,12,20,21,22
+     */
+    private int getBlockIndex(int row, int column){
+        return (column / 3 + 10 * (row / 3));
+    }
+
+    /**
+     * Calculates the global index of the cell
+     * @param row row index
+     * @param column row column
+     * @return index of the cell
+     */
+    private int getCellIndex(int row, int column){
+        return row * 9 + column;
+    }
+
+    /**
      * Fills the blanks that only have one viable option
      * @param board sudoku
      */
-    private void fillSudoku(int[][] board){
+    private void fillSudoku(int[][] board, Map<Integer, List<Integer>> blanksInEachBlock){
 
-        Map<Integer, Integer> usedNumbers = new HashMap<>();
-        for (int i = 1; i < 10; i++){
-            usedNumbers.put(i, 0);
-        }
+        Map<Integer, Integer> viableNumbers;
 
+        //for each empty cell in the sudoku
         for (int i = 0; i < 9; i++){
             for (int j = 0; j < 9; j++){
 
                 if (board[i][j] == 0){
 
-                    //reset number map
-                    for (int n = 1; n < 10; n++){
-                        usedNumbers.put(n, 0);
-                    }
+                    viableNumbers = getViableFits(board, getCellIndex(i, j));
 
-                    //get numbers that are not valid
-                    getSquareNumbers(board, i, j, usedNumbers);
-                    getColumnNumbers(board, j, usedNumbers);
-                    getRowNumbers(board, i, usedNumbers);
-
-                    //count how many options are left
-                    int options = (int) usedNumbers.values().stream()
-                            .filter(value -> value == 0)
+                    //count how many numbers can be placed in the cell
+                    int options = (int) viableNumbers.values().stream()
+                            .filter(value -> value == 1)
                             .count();
 
                     //if only one number is valid, assign it
                     if (options == 1){
-                        board[i][j] = usedNumbers.entrySet().stream()
-                                .filter(entry -> entry.getValue() == 0)
+                        board[i][j] = viableNumbers.entrySet().stream()
+                                .filter(entry -> entry.getValue() == 1)
                                 .map(Map.Entry::getKey)
                                 .collect(Collectors.toList())
                                 .get(0);
+                        int blockIndex = getBlockIndex(i, j);
+                        int cellIndex = getCellIndex(i,j);
+                        cellIndex = blanksInEachBlock.get(blockIndex).indexOf(cellIndex);
+                        blanksInEachBlock.get(blockIndex).remove(cellIndex);
+                    }
+
+                    //if more than one number is possible, check if
+                    //there's any number that can only be placed in
+                    //the cell (considering the square)
+                    else{
+                        int number = checkIfAnyNumberMustBePlacedInCell(board, i, j, blanksInEachBlock);
+                        if (number != -1){
+                            board[i][j] = number;
+
+                            int blockIndex = getBlockIndex(i, j);
+                            blanksInEachBlock.get(blockIndex).remove(new Integer[]{i,j});
+                        }
                     }
                 }
-
             }
         }
     }
+
+    /**
+     * Given a cell, checks if it must contain a value,
+     * taking into account all the values of the square.
+     * @param board sudoku
+     * @param row row index of the cell
+     * @param column column index of the cell
+     * @param blanksInEachBlock map indicating all blank cells in each square
+     * @return -1 if more than one value fits, a number from 1-9 if it is the only possible fit
+     */
+    private int checkIfAnyNumberMustBePlacedInCell(int[][] board, int row, int column, Map<Integer, List<Integer>> blanksInEachBlock){
+
+        int blockIndex = getBlockIndex(row, column);    //index of the square
+        List<Integer> blanksInBlock = blanksInEachBlock.get(blockIndex);  //list of blank cells
+        Map<Integer, Set<Integer>> fitsPerBlank = new HashMap<>();        //map of blank cells with possible numbers
+        Map<Integer, Integer> viableNumbers;
+        Set<Integer> numbers;
+        Set<Integer> cellPosibilities = new HashSet<>();
+
+        //for each blank cell in the square
+        for (Integer cell : blanksInBlock){
+            fitsPerBlank.put(cell, new HashSet<>());
+
+            //get numbers that can be placed in the cell
+            //and add them to the map
+            viableNumbers = getViableFits(board, cell);
+            numbers = viableNumbers.entrySet().stream()
+                                    .filter(entry -> entry.getValue() == 1)
+                                    .map(Map.Entry::getKey)
+                                    .collect(Collectors.toSet());
+
+            for (Integer number : numbers){
+
+                if (cell == getCellIndex(row, column)) cellPosibilities.add(number);
+                else fitsPerBlank.get(cell).add(number);
+            }
+        }
+
+        int fit = 0;
+        int numberOfFits = 0;
+
+        for (int number : cellPosibilities){
+            int count = (int)fitsPerBlank.values().stream()
+                    .filter(set -> set.contains(number))
+                    .count();
+
+            if (count == 0){
+                numberOfFits++;
+                fit = number;
+            }
+        }
+
+        if (numberOfFits == 1) return fit;
+        else return -1;
+    }
+
+    /**
+     * Calculates which numbers can be placed in a cell
+     * @param board sudoku
+     * @param cell index from the cell we need to work with
+     * @return a map indicating which numbers can be placed in the cell
+     *          0 -> the number cannot be placed in the cell
+     *          1 -> the number can be placed in the cell
+     */
+    private Map<Integer, Integer> getViableFits(int[][] board, int cell){
+        Map<Integer, Integer> viableFits = new HashMap<>();
+        Set<Integer> usedNumbers = new HashSet<>();
+
+        //get row and column from cell
+        int row = cell / 9;
+        int column = cell % 9;
+
+
+        //get numbers that are not valid for the cell
+        usedNumbers.addAll(getSquareNumbers(board, row, column));
+        usedNumbers.addAll(getColumnNumbers(board, column));
+        usedNumbers.addAll(getRowNumbers(board, row));
+
+        for (int i = 1; i <= 9; i++){
+            if (usedNumbers.contains(i)) viableFits.put(i, 0);
+            else viableFits.put(i, 1);
+        }
+
+        return viableFits;
+    }
+
 
     /**
      * Get the numbers already placed in a sudoku square and
@@ -102,9 +232,11 @@ public class Sudoku {
      * @param board sudoku
      * @param i row of the cell
      * @param j column of the cell
-     * @param numbers map of numbers
+     * @return a set with the numbers already used in the square
      */
-    private void getSquareNumbers(int[][] board, int i, int j, Map<Integer, Integer> numbers){
+    private Set<Integer> getSquareNumbers(int[][] board, int i, int j){
+
+        Set<Integer> numbers = new HashSet<>();
 
         //determine boundaries of the square
         int minRow = i - (i % 3);
@@ -116,10 +248,11 @@ public class Sudoku {
         for (j = minRow; j <= maxRow; j++){
             for (i = minCol; i <= maxCol; i++){
                 if (board[j][i] != 0){
-                    numbers.put(board[j][i], 1);
+                    numbers.add(board[j][i]);
                 }
             }
         }
+        return numbers;
     }
 
     /**
@@ -128,14 +261,18 @@ public class Sudoku {
      * 1 to its value)
      * @param board sudoku
      * @param column column we want to evaluate
-     * @param numbers map with the numbers
+     * @return a set with the numbers already used in the column
      */
-    private void getColumnNumbers(int[][] board, int column, Map<Integer, Integer> numbers){
+    private Set<Integer> getColumnNumbers(int[][] board, int column){
+
+        Set<Integer> numbers = new HashSet<>();
+
         for (int i = 0; i < 9; i++){
             if (board[i][column] != 0){
-                numbers.put(board[i][column], 1);
+                numbers.add(board[i][column]);
             }
         }
+        return numbers;
     }
 
     /**
@@ -144,14 +281,19 @@ public class Sudoku {
      * 1 to its value)
      * @param board sudoku
      * @param row row we want to evaluate
-     * @param numbers map of numbers
+     * @return a set with the numbers already used in the row
      */
-    private void getRowNumbers(int[][] board, int row, Map<Integer, Integer> numbers){
+    private Set<Integer> getRowNumbers(int[][] board, int row){
+
+        Set<Integer> numbers = new HashSet<>();
+
         for (int i = 0; i < 9; i++){
             if (board[row][i] != 0){
-                numbers.put(board[row][i], 1);
+                numbers.add(board[row][i]);
             }
         }
+
+        return numbers;
     }
 
 
@@ -182,6 +324,22 @@ public class Sudoku {
         return newSudoku;
     }
 
+    /**
+     * Getter for the first solution found
+     * @return a solution for the sudoku (int[][])
+     */
+    public int[][] getFirstSolution(){
+        return this.solutions.get(0);
+    }
+
+    /**
+     * Getter for the sudoku
+     * @return the original sudoku (int[][])
+     */
+    public int[][] getSudoku() {
+        return sudoku;
+    }
+
     @Override
     public String toString() {
 
@@ -189,8 +347,8 @@ public class Sudoku {
         text += printSudoku(sudoku);
 
         text += "\n\n\nSolutions:\n";
-        if (solucions.size() > 0){
-            for (int[][] sudoku : solucions){
+        if (solutions.size() > 0){
+            for (int[][] sudoku : solutions){
                 text += printSudoku(sudoku);
             }
         }
