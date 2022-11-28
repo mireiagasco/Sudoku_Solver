@@ -17,10 +17,35 @@ public class SudokuTests {
         List<GreedySudoku> sudokuSolutions = readSudokuFromFile(file);
 
         for (int i = 0; i < sudokuList.size(); i++){
-            sudokuList.get(i).solve();
-            Assert.assertEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
+            if(sudokuList.get(i).solve() == 0){
+                Assert.assertEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
+            }
+            else{
+                Assert.assertNotEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
+            }
         }
     }
+
+    @Test
+    void greedySolverMediumTests(){
+        File file = new File("src/sudokuFiles/medium.txt");
+        List<GreedySudoku> sudokuList = readSudokuFromFile(file);
+        file = new File("src/sudokuFiles/mediumSolutions.txt");
+        List<GreedySudoku> sudokuSolutions = readSudokuFromFile(file);
+
+        for (int i = 0; i < sudokuList.size(); i++){
+            if(sudokuList.get(i).solve() == 0){
+                Assert.assertEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
+            }
+            else{
+                Assert.assertNotEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
+            }
+        }
+    }
+
+
+
+
 
     public static List<GreedySudoku> readSudokuFromFile(File file){
 
