@@ -12,8 +12,9 @@ public class App {
                                                 {0, 0, 0, 4, 1, 9, 0, 0, 5},
                                                 {0, 0, 0, 0, 8, 0, 0, 7, 9}});
 
-
         System.out.println(sudoku);
+        sudoku.backtrackingSolver(0,0);
+        sudoku.printSoluc();
 
     }
 }
