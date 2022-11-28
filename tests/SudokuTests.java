@@ -1,32 +1,30 @@
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class App {
+public class SudokuTests {
 
-    public static void main(String[] args) {
-
+    @Test
+     void greedySolverEasyTests(){
         File file = new File("src/sudokuFiles/easy.txt");
-        List<Sudoku> sudokuList = readSudokuFromFile(file);
+        List<GreedySudoku> sudokuList = readSudokuFromFile(file);
         file = new File("src/sudokuFiles/easySolutions.txt");
-        List<Sudoku> sudokuSolutions = readSudokuFromFile(file);
-
+        List<GreedySudoku> sudokuSolutions = readSudokuFromFile(file);
 
         for (int i = 0; i < sudokuList.size(); i++){
-            System.out.println("\n--------------- Sudoku #" + i + " ---------------\n");
-            Sudoku sudoku = sudokuList.get(i);
-            int result = sudoku.solve();
-
-            System.out.println(sudoku);
+            sudokuList.get(i).solve();
+            Assert.assertEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
         }
     }
 
+    public static List<GreedySudoku> readSudokuFromFile(File file){
 
-    public static List<Sudoku> readSudokuFromFile(File file){
-
-        List<Sudoku> sudokuList = new ArrayList<>();
+        List<GreedySudoku> sudokuList = new ArrayList<>();
         String[] data;
         int j, k;
 
@@ -50,8 +48,9 @@ public class App {
                     }
                 }
 
-                Sudoku newSudoku = new GreedySudoku(board);
+                GreedySudoku newSudoku = new GreedySudoku(board);
                 sudokuList.add(newSudoku);
+
             }
 
         }catch (FileNotFoundException e){
@@ -60,5 +59,6 @@ public class App {
 
         return sudokuList;
     }
+
 
 }
