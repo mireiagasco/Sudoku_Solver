@@ -1,53 +1,43 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class Sudoku {
+public abstract class Sudoku {
 
     private int[][] sudoku;
-    private List<int[][]> solucions;
 
     public Sudoku(int[][] sudoku) {
         this.sudoku = sudoku;
-        this.solucions = new ArrayList<>();
     }
+
+    public abstract int solve();
 
     /**
-     * Tries to find a solution to the sudoku
-     * @return 0 if a solution was found, 1 if it was not.
+     * Makes a copy of the original sudoku
+     * @return int[][] with a copy of the sudoku
      */
-    public int greedySolver(){
+    protected int[][] sudokuCopy(){
+        int[][] newSudoku = new int[9][9];
 
-        return 0;
-    }
-
-    /**
-     * Finds all possible solutions to the sudoku
-     * @return 0 if any solution was found, 1 if it was not.
-     */
-    public int backtrackingSolver(){
-
-
-        return 0;
-    }
-
-
-    @Override
-    public String toString() {
-
-        String text = "\nOriginal Sudoku:\n";
-        text += printSudoku(sudoku);
-
-        if (solucions.size() > 0){
-            for (int[][] sudoku : solucions){
-                text += "\n\n" + printSudoku(sudoku);
+        for (int i = 0; i < 9; i++){
+            for (int j = 0; j < 9; j++){
+                newSudoku[i][j] = this.sudoku[i][j];
             }
         }
-        return text;
+
+        return newSudoku;
+    }
+
+    /**
+     * Getter for the sudoku
+     * @return the original sudoku (int[][])
+     */
+    public int[][] getSudoku() {
+        return sudoku;
     }
 
 
-    private String printSudoku(int[][] sudoku){
+
+    protected String printSudoku(int[][] sudoku){
 
         String text = "";
 
