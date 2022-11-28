@@ -8,12 +8,12 @@ public class App {
 
     public static void main(String[] args) {
 
-        File file = new File("src/sudokuFiles/easy.txt");
-        List<Sudoku> sudokuList = readSudokuFromFile(file);
-        file = new File("src/sudokuFiles/easySolutions.txt");
-        List<Sudoku> sudokuSolutions = readSudokuFromFile(file);
+        File file1 = new File("src/sudokuFiles/easy.txt");
+        List<Sudoku> sudokuList = readSudokuFromFile(file1,0);
+        File file2 = new File("src/sudokuFiles/easySolutions.txt");
+        List<Sudoku> sudokuSolutions = readSudokuFromFile(file2,0);
 
-
+        System.out.println("\n--------------- Greedy ---------------\n");
         for (int i = 0; i < sudokuList.size(); i++){
             System.out.println("\n--------------- Sudoku #" + i + " ---------------\n");
             Sudoku sudoku = sudokuList.get(i);
@@ -21,10 +21,20 @@ public class App {
 
             System.out.println(sudoku);
         }
+
+        sudokuList = readSudokuFromFile(file1, 1);
+        sudokuSolutions = readSudokuFromFile(file2,1);
+
+        System.out.println("\n--------------- Backtracking ---------------\n");
+        for (int i = 0; i < sudokuList.size(); i++){
+            System.out.println("\n--------------- Sudoku #" + i + " ---------------\n");
+            Sudoku sudoku = sudokuList.get(i);
+            int result = sudoku.solve();
+            System.out.println(sudoku);
+        }
     }
 
-
-    public static List<Sudoku> readSudokuFromFile(File file){
+    public static List<Sudoku> readSudokuFromFile(File file,int type){
 
         List<Sudoku> sudokuList = new ArrayList<>();
         String[] data;
@@ -49,8 +59,13 @@ public class App {
                         j++;
                     }
                 }
-
-                Sudoku newSudoku = new GreedySudoku(board);
+                Sudoku newSudoku;
+                if (type == 0) {
+                    newSudoku = new GreedySudoku(board);
+                }
+                else {
+                    newSudoku = new BacktrackingSudoku(board);
+                }
                 sudokuList.add(newSudoku);
             }
 
