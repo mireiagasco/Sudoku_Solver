@@ -12,19 +12,19 @@ public class SudokuTests {
     @Test
      void greedySolverEasyTests(){
         File file = new File("src/sudokuFiles/easy.txt");
-        List<Sudoku> sudokuList = readSudokuFromFile(file);
+        List<GreedySudoku> sudokuList = readSudokuFromFile(file);
         file = new File("src/sudokuFiles/easySolutions.txt");
-        List<Sudoku> sudokuSolutions = readSudokuFromFile(file);
+        List<GreedySudoku> sudokuSolutions = readSudokuFromFile(file);
 
         for (int i = 0; i < sudokuList.size(); i++){
-            sudokuList.get(i).greedySolver();
-            Assert.assertEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getFirstSolution());
+            sudokuList.get(i).solve();
+            Assert.assertEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
         }
     }
 
-    public static List<Sudoku> readSudokuFromFile(File file){
+    public static List<GreedySudoku> readSudokuFromFile(File file){
 
-        List<Sudoku> sudokuList = new ArrayList<>();
+        List<GreedySudoku> sudokuList = new ArrayList<>();
         String[] data;
         int j, k;
 
@@ -48,7 +48,7 @@ public class SudokuTests {
                     }
                 }
 
-                Sudoku newSudoku = new Sudoku(board);
+                GreedySudoku newSudoku = new GreedySudoku(board);
                 sudokuList.add(newSudoku);
 
             }

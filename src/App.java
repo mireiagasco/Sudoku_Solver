@@ -16,7 +16,7 @@ public class App {
         for (int i = 0; i < sudokuList.size(); i++){
             System.out.println("\n--------------- Sudoku #" + i + " ---------------\n");
             Sudoku sudoku = sudokuList.get(i);
-            int result = sudoku.greedySolver();
+            int result = sudoku.solve();
 
             System.out.println(sudoku);
         }
@@ -49,9 +49,8 @@ public class App {
                     }
                 }
 
-                Sudoku newSudoku = new Sudoku(board);
+                Sudoku newSudoku = new GreedySudoku(board);
                 sudokuList.add(newSudoku);
-
             }
 
         }catch (FileNotFoundException e){
