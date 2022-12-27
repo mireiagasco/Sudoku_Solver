@@ -1,11 +1,14 @@
-import org.testng.Assert;
-import org.testng.annotations.Test;
+
+
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SudokuTests {
 
@@ -18,10 +21,10 @@ public class SudokuTests {
 
         for (int i = 0; i < sudokuList.size(); i++){
             if(sudokuList.get(i).solve() == 0){
-                Assert.assertEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
+                assertArrayEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
             }
             else{
-                Assert.assertNotEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
+                assertNotEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
             }
         }
     }
@@ -35,10 +38,10 @@ public class SudokuTests {
 
         for (int i = 0; i < sudokuList.size(); i++){
             if(sudokuList.get(i).solve() == 0){
-                Assert.assertEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
+                assertArrayEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
             }
             else{
-                Assert.assertNotEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
+                assertNotEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
             }
         }
     }
@@ -94,7 +97,7 @@ public class SudokuTests {
 
         for (int i = 0; i < sudokuList.size(); i++){
             sudokuList.get(i).solve();
-            Assert.assertEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
+            assertArrayEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
         }
     }
 
@@ -107,7 +110,7 @@ public class SudokuTests {
 
         for (int i = 0; i < sudokuList.size(); i++){
             sudokuList.get(i).solve();
-            Assert.assertEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
+            assertArrayEquals(sudokuSolutions.get(i).getSudoku(), sudokuList.get(i).getSolution());
         }
     }
     public static List<BacktrackingSudoku> readSudokuBtFromFile(File file){

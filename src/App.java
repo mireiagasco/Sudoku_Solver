@@ -8,9 +8,9 @@ public class App {
 
     public static void main(String[] args) {
 
-        File file1 = new File("src/sudokuFiles/easy.txt");
+        File file1 = new File("src/sudokuFiles/medium.txt");
         List<Sudoku> sudokuList = readSudokuFromFile(file1,0);
-        File file2 = new File("src/sudokuFiles/easySolutions.txt");
+        File file2 = new File("src/sudokuFiles/mediumSolutions.txt");
         List<Sudoku> sudokuSolutions = readSudokuFromFile(file2,0);
 
 
