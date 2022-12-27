@@ -1,6 +1,8 @@
-import java.util.*;
-import java.util.stream.Collectors;
-
+/**
+ * Abstract class for the sudokus
+ * @author Mireia Gasco
+ * @author Aina Ponseti
+ */
 public abstract class Sudoku {
 
     private int[][] sudoku;
