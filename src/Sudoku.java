@@ -38,7 +38,6 @@ public abstract class Sudoku {
     }
 
 
-
     protected String printSudoku(int[][] sudoku){
 
         String text = "";
