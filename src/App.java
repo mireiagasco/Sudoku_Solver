@@ -13,6 +13,7 @@ public class App {
         File file2 = new File("src/sudokuFiles/easySolutions.txt");
         List<Sudoku> sudokuSolutions = readSudokuFromFile(file2,0);
 
+
         System.out.println("\n--------------- Greedy ---------------\n");
         for (int i = 0; i < sudokuList.size(); i++){
             System.out.println("\n--------------- Sudoku #" + i + " ---------------\n");

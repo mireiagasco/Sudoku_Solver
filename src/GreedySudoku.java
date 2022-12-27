@@ -1,6 +1,10 @@
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Greedy sudoku solver - inherits from sudoku
+ * Implements a logical sudoku solving algorithm
+ */
 public class GreedySudoku extends Sudoku{
 
     private int[][] solution;
@@ -16,15 +20,9 @@ public class GreedySudoku extends Sudoku{
     public int solve(){
 
         Map<Integer, List<Integer>> blanksInEachBlock = new HashMap<>();
-        blanksInEachBlock.put(0, new ArrayList<>());
-        blanksInEachBlock.put(1, new ArrayList<>());
-        blanksInEachBlock.put(2, new ArrayList<>());
-        blanksInEachBlock.put(10, new ArrayList<>());
-        blanksInEachBlock.put(11, new ArrayList<>());
-        blanksInEachBlock.put(12, new ArrayList<>());
-        blanksInEachBlock.put(20, new ArrayList<>());
-        blanksInEachBlock.put(21, new ArrayList<>());
-        blanksInEachBlock.put(22, new ArrayList<>());
+        for (int i : new int[]{0,1,2,10,11,12,20,21,22}){
+            blanksInEachBlock.put(i, new ArrayList<>());
+        }
 
         int[][] solution = sudokuCopy();
         int iniZeros = countZeros(solution, blanksInEachBlock);
@@ -155,6 +153,7 @@ public class GreedySudoku extends Sudoku{
         Set<Integer> cellPosibilities = new HashSet<>();
 
         //for each blank cell in the square
+
         for (Integer cell : blanksInBlock){
             fitsPerBlank.put(cell, new HashSet<>());
 
