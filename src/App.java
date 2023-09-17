@@ -8,29 +8,52 @@ public class App {
 
     public static void main(String[] args) {
 
+        System.out.println("\nSudokus facils:\n");
+
         File file1 = new File("src/sudokuFiles/easy.txt");
         List<Sudoku> sudokuList = readSudokuFromFile(file1,0);
-        File file2 = new File("src/sudokuFiles/easySolutions.txt");
-        List<Sudoku> sudokuSolutions = readSudokuFromFile(file2,0);
-
 
         System.out.println("\n--------------- Greedy ---------------\n");
         for (int i = 0; i < sudokuList.size(); i++){
-            System.out.println("\n--------------- Sudoku #" + i + " ---------------\n");
+            System.out.println("\n--> Sudoku #" + i + "\n");
             Sudoku sudoku = sudokuList.get(i);
-            int result = sudoku.solve();
+            sudoku.solve();
 
             System.out.println(sudoku);
         }
 
         sudokuList = readSudokuFromFile(file1, 1);
-        sudokuSolutions = readSudokuFromFile(file2,1);
 
         System.out.println("\n--------------- Backtracking ---------------\n");
         for (int i = 0; i < sudokuList.size(); i++){
-            System.out.println("\n--------------- Sudoku #" + i + " ---------------\n");
+            System.out.println("\n--> Sudoku #" + i + "\n");
             Sudoku sudoku = sudokuList.get(i);
-            int result = sudoku.solve();
+            sudoku.solve();
+            System.out.println(sudoku);
+        }
+
+
+        System.out.println("\nSudokus dificils:\n");
+
+        File file2 = new File("src/sudokuFiles/medium.txt");
+        List<Sudoku> sudokuList2 = readSudokuFromFile(file2,0);
+
+        System.out.println("\n--------------- Greedy ---------------\n");
+        for (int i = 0; i < sudokuList2.size(); i++){
+            System.out.println("\n--> Sudoku #" + i + "\n");
+            Sudoku sudoku = sudokuList2.get(i);
+            sudoku.solve();
+
+            System.out.println(sudoku);
+        }
+
+        sudokuList = readSudokuFromFile(file1, 1);
+
+        System.out.println("\n--------------- Backtracking ---------------\n");
+        for (int i = 0; i < sudokuList.size(); i++){
+            System.out.println("\n--> Sudoku #" + i + "\n");
+            Sudoku sudoku = sudokuList.get(i);
+            sudoku.solve();
             System.out.println(sudoku);
         }
     }
@@ -51,11 +74,11 @@ public class App {
                 k = 0;
 
                 data = fileReader.nextLine().split(",");
-                for (int i = 0; i < data.length; i++){
+                for (String datum : data) {
 
-                    board[j][k] = Integer.valueOf(data[i]);
+                    board[j][k] = Integer.parseInt(datum);
                     k++;
-                    if (k >= 9){
+                    if (k >= 9) {
                         k = 0;
                         j++;
                     }
@@ -71,7 +94,7 @@ public class App {
             }
 
         }catch (FileNotFoundException e){
-            System.out.println(e);
+            e.printStackTrace();
         }
 
         return sudokuList;
